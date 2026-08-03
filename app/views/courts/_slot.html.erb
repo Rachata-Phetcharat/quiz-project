@@ -1,0 +1,64 @@
+<% 
+  is_available = slot[:status] == 'available'
+  is_maintenance = slot[:status] == 'maintenance'
+  
+  bg_color = if is_maintenance
+               'bg-gray-100 border-gray-300 opacity-60'
+             elsif is_available 
+               'bg-green-50 border-green-200'
+             else
+               'bg-red-50 border-red-200 opacity-75'
+             end
+             
+  dot_color = if is_maintenance
+                'bg-gray-500'
+              elsif is_available
+                'bg-green-500'
+              else
+                'bg-red-500'
+              end
+              
+  text_color = if is_maintenance
+                 'text-gray-600'
+               elsif is_available
+                 'text-green-800'
+               else
+                 'text-red-800'
+               end
+               
+  status_text = if is_maintenance
+                  'Maintenance'
+                elsif is_available
+                  'Available'
+                else
+                  'Booked'
+                end
+%>
+
+<div class="flex flex-col justify-between p-4 rounded-xl border <%= bg_color %> transition-all duration-200 hover:shadow-md">
+  <div class="flex justify-between items-center mb-3">
+    <div class="text-lg font-semibold text-gray-900 tracking-tight">
+      <%= slot[:start_time] %> - <%= slot[:end_time] %>
+    </div>
+    <div class="flex items-center space-x-1.5">
+      <span class="w-2.5 h-2.5 rounded-full <%= dot_color %>"></span>
+      <span class="text-xs font-medium uppercase tracking-wider <%= text_color %>"><%= status_text %></span>
+    </div>
+  </div>
+  
+  <div class="mt-2">
+    <% if is_available %>
+      <%= link_to new_booking_path(court_id: @court.id, booking_date: params[:booking_date] || Date.today, start_time: slot[:start_time], end_time: slot[:end_time]), class: "block text-center w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" do %>
+        Book Slot
+      <% end %>
+    <% elsif is_maintenance %>
+      <button disabled class="w-full py-2 px-4 bg-gray-300 text-gray-600 text-sm font-semibold rounded-lg cursor-not-allowed">
+        Closed
+      </button>
+    <% else %>
+      <button disabled class="w-full py-2 px-4 bg-gray-200 text-gray-500 text-sm font-semibold rounded-lg cursor-not-allowed">
+        Unavailable
+      </button>
+    <% end %>
+  </div>
+</div>
